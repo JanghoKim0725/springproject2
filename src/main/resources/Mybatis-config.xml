@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<typeAliases><typeAlias type="com.myhome.dto.NboardDto"  alias="nboardDto"  /></typeAliases>
+	<typeAliases><typeAlias type="com.myhome.dto.MyboardDto" alias="MyboardDto" /></typeAliases>
+	<typeAliases><typeAlias type="com.myhome.dto.DataDto"    alias="DataDto"    /></typeAliases>
+</configuration>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myhome.mapper.NboardMapper">
+	
+	<insert id="insertNboard">
+		insert into nboard(seqid,title,pass,writer,content,hits,rdate,udate,emsis)
+		values (nboard_seq.nextval,#{title},#{pass},#{writer},#{content},'0',#{rdate},'',#{emsis})
+	</insert>
+	
+	<select id="selectNboardList" resultType="Map">
+		select 			  b. * from(
+		select rownum rn, a. * from(
+		select seqid,title,pass,writer,content,hits,rdate,udate,emsis from nboard 
+		where emsis = 'N' order by seqid desc)a)b where rn >= 1 and rn <![CDATA[<]]>= 10
+	</select>
+	
+	<select id="selectNboardEmsisList" resultType="Map">
+		select 			  b. * from(
+		select rownum rn, a. * from(
+		select seqid,title,pass,writer,content,hits,rdate,udate,emsis from nboard 
+		where emsis = 'Y' order by seqid desc)a)b where rn >= 1 and rn <![CDATA[<]]>= 10
+	</select>
+	
+	<select id="selectNboardTotal" resultType="int">select count(*) from nboard where emsis = 'N'</select>
+	
+	<select id="selectNboardDetail" resultType="com.myhome.dto.NboardDto">
+	 	<![CDATA[ select seqid,title,pass,writer,content,hits,rdate,udate,emsis,(
+	    		  select min(seqid) from nboard where seqid > #{seqid})nseqid,(
+        		  select max(seqid) from nboard where seqid < #{seqid})bseqid 
+        		  from nboard where seqid = #{seqid} ]]>
+	</select>
+	
+	<select id="selectNboardPassCheck" resultType="int">
+		select count(*) from nboard where seqid = #{seqid} and pass = #{pass}
+	</select>
+	
+	<update id="updateNboardHits">update nboard set hits = hits + 1 where seqid = #{seqid}</update>
+	
+	<update id="updateNboard">
+		update nboard set title = #{title},writer = #{writer},content = #{content},udate = sysdate 
+		where  seqid = #{seqid} and pass = #{pass}
+	</update>
+	
+	<delete id="deleteNboard">delete nboard where seqid = #{seqid} and pass = #{pass}</delete>
+
+</mapper>

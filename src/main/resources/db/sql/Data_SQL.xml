@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.myhome.mapper.DataMapper">
+
+	<insert id="insertData">
+		insert into databoard(seqid,title,pass,writer,content,hits,rdate,udate,filepath,filename,filesize) 
+		values(databoard_seq.nextval,#{title},#{pass},#{writer},#{content},0,sysdate,'',
+			   #{filepath},#{filename},#{filesize})
+	</insert>
+	
+	<select id="selectDataList" resultType="Map">
+		<![CDATA[ select 			b. * from (
+				  select rownum rn, a. * from (
+				  select seqid,title,pass,writer,content,hits,filename,
+				  to_char(rdate,'yyyy-mm-dd')rdate,to_char(udate,'yyyy-mm-dd')udate
+				  from databoard m order by seqid desc)a)b 
+				  where rn >= #{firstIndex} and rn <= #{lastIndex} ]]>
+	</select>
+	
+	<select id="selectDataDetail" resultType="DataDto">
+		<![CDATA[ select seqid,title,pass,writer,content,hits,filename,
+				  to_char(rdate,'yyyy-mm-dd')rdate,to_char(udate,'yyyy-mm-dd')udate,(
+				  select max(seqid) from databoard where seqid < #{seqid})bseqid,(
+				  select min(seqid) from databoard where seqid > #{seqid})nseqid
+				  from databoard where seqid = #{seqid} ]]>
+	</select>
+	
+	<select id="selectDataTotal" resultType="int">select count(*) from databoard</select>
+	
+	<update id="updateDataHits">update databoard set hits = hits + 1 where seqid = #{seqid}</update>
+	
+	<update id="updateDataFileName">
+		update databoard set filename = #{filename} where seqid = #{seqid}
+	</update>
+	
+	<update id="updateData">
+		update databoard set title = #{title},writer = #{writer},content = #{content},udate = sysdate,
+							 filename = #{filename} where seqid = #{seqid}
+	</update>
+	
+	<delete id="deleteData">delete from databoard where seqid = #{seqid}</delete>
+
+</mapper>
